@@ -1,0 +1,67 @@
+---
+title: "Group 25 Project"
+author: "George Pnigouras and Riccardo Romio"
+date: "2023-12-06"
+output: pdf_document
+---
+
+
+```{r}
+library(readxl)
+library(readr)
+library(tidyverse)
+```
+
+```{r}
+interestRates = read_excel("Data/Interest Rates.xlsx")
+
+unemployment = read_excel("Data/Unemployment Data.xlsx")
+
+sekEur = read_excel("Data/SEK-EUR.xlsx")
+
+sekUsd = read_excel("Data/SEK-USD.xlsx")
+```
+```{r}
+yrQrVector = function(initial, final){
+  yrQrVector <- sprintf("%d-Q%d", rep(initial:final, each = 4), rep(1:4, times = final - initial + 1))
+  return(yrQrVector)
+}
+```
+
+
+```{r}
+cpi = read_excel("Data/CPI-Fixed Index.xlsx")
+
+#remove first two rows as they contain NAs and colNames
+#remove last two rows so we get a multiple of 4 and can write quarterly averages
+cpi = cpi[c(-1,-2, -525, -524),] 
+
+cpiOrigin = as.numeric((cpi[,2])[[1]])
+
+
+cpiQuarter <- tapply(cpiOrigin, rep(1:(length(cpiOrigin)/3), each = 3, length.out = length(cpiOrigin)), mean)
+
+cpiYrQrVector <- yrQrVector(1980, 2023)
+
+cpiYrQrVector = cpiYrQrVector[c(-175,-176)]
+
+cpi = as.data.frame(cbind(yrQrVector, cpiQuarter))
+  
+#change colNames
+colnames(cpi) = c("Year-Quarter", "CPI") 
+```
+
+```{r}
+gdp = as.data.frame(read_excel("Data/GDP and Others.xlsx"))
+
+colnames(gdp) = gdp[2,]
+
+gdp = gdp[c(-1,-2),]
+
+#some observations are still empty, and colnames need to be fixed.
+```
+
+```{r}
+
+```
+
